@@ -1,0 +1,69 @@
+#INPUT
+
+GET a, b from user
+
+IF a = "pi"
+    a <- π
+ENDIF
+
+IF b = "pi"
+    b <- π
+ENDIF
+
+GET f_x from user
+GET method from user
+GET n from user
+GET exact value from user
+
+area <- 0
+
+#PROCESS
+
+h <- (b - a) / n
+
+IF method = "TRM"
+
+    area <- f_x(a) + f_x(b)
+
+    FOR i IN RANGE(1, n) DO
+        xi <- a + i * h
+        area <- area + 2 * f_x(xi)
+    ENDFOR
+
+    area <- area * h / 2
+
+ELSE
+
+    shift <- 0
+    constant <- 0
+
+    IF method = "RRM"
+        shift <- 1
+    ENDIF
+
+    IF method = "MPM"
+        constant <- h / 2
+    ENDIF
+
+    FOR i IN RANGE(0 + shift, n + shift) DO
+        xi <- a + i * h + constant
+        height <- f_x(xi)
+        area <- area + height * h
+    ENDFOR
+
+ENDIF
+
+IF exact value exists
+    absolute_error <- |exact - area|
+    relative_error <- (absolute_error / exact) × 100
+ENDIF
+
+#OUTPUT
+
+DISPLAY "The integration of " + f_x + " is " + area
+
+IF exact value exists
+    DISPLAY "Exact value: " + exact
+    DISPLAY "Absolute error: " + absolute_error
+    DISPLAY "Relative error: " + relative_error + "%"
+ENDIF
