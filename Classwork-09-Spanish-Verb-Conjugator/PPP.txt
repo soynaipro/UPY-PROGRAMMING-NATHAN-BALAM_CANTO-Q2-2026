@@ -1,0 +1,23 @@
+# Required structure
+pronouns <- list containing "Yo", "Tú", "Él", "Nosotros", "Vosotros", "Ellos"
+
+endings <- dictionary containing:
+    "ar" mapped to "o", "as", "a", "amos", "ais", "an"
+    "er" mapped to "o", "es", "e", "emos", "eis", "en"
+    "ir" mapped to "o", "es", "e", "imos", "is", "en"
+
+# INPUT
+PRINT "Write a spanish verb (ar/er/ir): "
+READ verb
+
+# PROCESS
+stem <- verb excluding its last 2 characters
+ending <- last 2 characters of verb
+
+conjugations <- get list from endings dictionary using key ending
+
+# OUTPUT
+FOR EACH index, pronoun IN enumerate pronouns DO
+    termination <- conjugations at position index
+    PRINT pronoun + " " + stem + termination
+END FOR
