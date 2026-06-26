@@ -1,0 +1,187 @@
+# Required structure
+users <- dictionary containing:
+    "jperez" mapped to {"password": "1234", "rol": "student", "name": "Juan Pérez"}
+    "dromo" mapped to {"password": "1234", "rol": "student", "name": "Daniela Romo"}
+    "mjuarez" mapped to {"password": "1234", "rol": "student", "name": "Mauricio Juárez"}
+    "mlopez" mapped to {"password": "1234", "rol": "student", "name": "María López"}
+    "euc" mapped to {"password": "1234", "rol": "student", "name": "Ernesto Uc"}
+    "cbalam" mapped to {"password": "1234", "rol": "student", "name": "Carlos Balam"}
+    "jpedrozo" mapped to {"password": "1234", "rol": "professor", "name": "Jorge Pedrozo"}
+    "dgamboa" mapped to {"password": "1234", "rol": "coordinator", "name": "Didier Gamboa"}
+
+subjects <- tuple containing "Discrete Mathematics", "Programming", "English II", "Differential Calculus", "Probability and Statistics", "Computer and Server Architecture", "Socio-Emotional Skills and Conflict Management"
+
+notes <- dictionary containing:
+    "jperez" mapped to {"Discrete Mathematics": 8.5, "Programming": 9.2, "English II": 9.0, "Differential Calculus": 7.8, "Probability and Statistics": 8.3, "Computer and Server Architecture": 6.8, "Socio-Emotional Skills and Conflict Management": 9.5}
+    "dromo" mapped to {"Discrete Mathematics": 9.0, "Programming": 6.7, "English II": 9.4, "Differential Calculus": 6.2, "Probability and Statistics": 9.1, "Computer and Server Architecture": 6.5, "Socio-Emotional Skills and Conflict Management": 9.8}
+    "mjuarez" mapped to {"Discrete Mathematics": 7.5, "Programming": 8.0, "English II": 8.5, "Differential Calculus": 7.0, "Probability and Statistics": 7.8, "Computer and Server Architecture": 6.2, "Socio-Emotional Skills and Conflict Management": 8.9}
+    "mlopez" mapped to {"Discrete Mathematics": 9.5, "Programming": 9.8, "English II": 9.2, "Differential Calculus": 9.0, "Probability and Statistics": 9.6, "Computer and Server Architecture": 9.4, "Socio-Emotional Skills and Conflict Management": 10.0}
+    "euc" mapped to {"Discrete Mathematics": 8.2, "Programming": 6.9, "English II": 8.8, "Differential Calculus": 6.0, "Probability and Statistics": 6.4, "Computer and Server Architecture": 8.1, "Socio-Emotional Skills and Conflict Management": 9.0}
+    "cbalam" mapped to {"Discrete Mathematics": 8.8, "Programming": 9.0, "English II": 8.5, "Differential Calculus": 6.6, "Probability and Statistics": 8.9, "Computer and Server Architecture": 8.7, "Socio-Emotional Skills and Conflict Management": 9.2}
+
+logged_in <- False
+current_user <- ""
+current_role <- ""
+current_name <- ""
+
+WHILE logged_in equals False DO
+    # INPUT
+    PRINT "User: "
+    READ username
+    PRINT "Password: "
+    READ password
+    
+    # PROCESS
+    IF username exists in users AND users[username]['password'] equals password THEN
+        logged_in <- True
+        current_user <- username
+        current_role <- users[username]['rol']
+        current_name <- users[username]['name']
+        
+        # OUTPUT
+        PRINT "\nBienvenid@!, " + current_name + " (" + current_role + ")"
+    ELSE
+        # OUTPUT
+        PRINT "Invalid credentials. Please try again.\n"
+    END IF
+END WHILE
+
+# PROCESS
+IF current_role equals "student" THEN
+    # OUTPUT
+    PRINT "\nSchool Report\n"
+    
+    # PROCESS
+    approved_subjects <- empty set
+    
+    FOR EACH subj IN subjects DO
+        grade <- notes[current_user][subj]
+        
+        # OUTPUT
+        PRINT subj truncated to 26 characters + ": " + grade
+        
+        # PROCESS
+        IF grade >= 8.0 THEN
+            add subj to approved_subjects
+        END IF
+    END FOR
+    
+    pending_subjects <- subjects set difference approved_subjects
+    
+    # OUTPUT
+    PRINT "\nApproved: " + string representation of approved_subjects
+    PRINT "Pending: " + string representation of pending_subjects
+    
+ELSE IF current_role equals "professor" THEN
+    WHILE True DO
+        # OUTPUT
+        PRINT "\nStudents"
+        
+        FOR EACH user_id, user_data IN users DO
+            IF user_data['rol'] equals "student" THEN
+                PRINT "User: " + user_id + " | Student: " + user_data['name']
+            END IF
+        END FOR
+        
+        # INPUT
+        PRINT "\nStudent to grade (username): "
+        READ target_student
+        
+        # PROCESS
+        IF target_student exists in notes THEN
+            # OUTPUT
+            PRINT empty line
+            FOR EACH subj IN subjects DO
+                PRINT subj
+            END FOR
+            
+            # INPUT
+            PRINT "\nSubject to grade: "
+            READ target_subject
+            
+            # PROCESS
+            IF target_subject exists in subjects THEN
+                # INPUT
+                PRINT "New grade: "
+                READ new_grade
+                
+                # PROCESS
+                old_grade <- notes[target_student][target_subject]
+                
+                # OUTPUT
+                PRINT "Do you confirm (yes/no)?"
+                PRINT target_subject + ": " + old_grade + " ==> " + new_grade
+                
+                # INPUT
+                READ confirm
+                
+                # PROCESS
+                IF confirm converted to lowercase equals "yes" THEN
+                    notes[target_student][target_subject] <- new_grade
+                    
+                    # OUTPUT
+                    PRINT "\nGrade updated!"
+                    PRINT notes[target_student]
+                ELSE IF confirm converted to lowercase equals "no" THEN
+                    # OUTPUT
+                    PRINT "Write other thing to exit"
+                END IF
+            ELSE
+                # OUTPUT
+                PRINT "Subject not found."
+            END IF
+        ELSE
+            # OUTPUT
+            PRINT "Student not found."
+        END IF
+    END WHILE
+
+ELSE IF current_role equals "coordinator" THEN
+    # OUTPUT
+    PRINT "\nProfessors"
+    
+    FOR EACH user_id, user_data IN users DO
+        IF user_data['rol'] equals "professor" THEN
+            PRINT "User: " + user_id + " | Professor: " + user_data['name']
+        END IF
+    END FOR
+    
+    PRINT "\nStudents"
+    
+    # PROCESS
+    student_ids <- empty list
+    
+    FOR EACH user_id, user_data IN users DO
+        IF user_data['rol'] equals "student" THEN
+            # OUTPUT
+            PRINT "User: " + user_id + " | Student: " + user_data['name']
+            
+            # PROCESS
+            add user_id to student_ids
+        END IF
+    END FOR
+    
+    # OUTPUT
+    PRINT "\nRecords"
+    
+    # PROCESS
+    header <- "SUBJECTS      | " + student_ids joined by " | "
+    
+    # OUTPUT
+    PRINT header
+    
+    # PROCESS
+    FOR EACH subj IN subjects DO
+        row <- subj truncated to 13 characters + " | "
+        grades_list <- empty list
+        
+        FOR EACH s_id IN student_ids DO
+            add string format of notes[s_id][subj] to grades_list
+        END FOR
+        
+        row <- row + grades_list joined by " | "
+        
+        # OUTPUT
+        PRINT row
+    END FOR
+END IF
