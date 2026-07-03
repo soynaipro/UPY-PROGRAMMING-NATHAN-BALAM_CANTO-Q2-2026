@@ -1,0 +1,62 @@
+ALGORITHM MandelbrotSetGenerator
+
+### INPUT
+OPEN file "config.txt" FOR READING AS configFile
+DECLARE config AS Dictionary
+
+WHILE NOT EOF(configFile) DO
+    line <- READ_LINE(configFile)
+    line <- STRIP(line)
+    
+    IF line IS NOT EMPTY THEN
+        parameter, value <- SPLIT(line, "=")
+        parameter <- STRIP(parameter)
+        value <- STRIP(value)
+        
+        # Type casting based on decimal presence
+        IF "." IN value THEN
+            config[parameter] <- TO_FLOAT(value)
+        ELSE
+            config[parameter] <- TO_INTEGER(value)
+        END IF
+    END IF
+END WHILE
+
+CLOSE configFile
+
+# Assigning configuration values to explicit variables
+width <- config["ancho"]
+height <- config["alto"]
+max_iter <- config["max_iter"]
+real_min <- config["real_min"]
+real_max <- config["real_max"]
+imag_min <- config["imag_min"]
+imag_max <- config["imag_max"]
+
+### PROCESS
+OPEN file "mandelbrot.csv" FOR WRITING AS outputFile
+WRITE_LINE(outputFile, "row,column,iterations")
+
+FOR row FROM 0 TO height - 1 DO
+    FOR column FROM 0 TO width - 1 DO
+        # Map pixel coordinates (row, column) to complex plane (real, imag)
+        real <- real_min + (column / width) * (real_max - real_min)
+        imag <- imag_min + (row / height) * (imag_max - imag_min)
+        c <- COMPLEX(real, imag)
+        
+        z <- COMPLEX(0, 0)
+        iterations <- 0
+        
+        # Mandelbrot recurrence relation and escape condition
+        WHILE (ABSOLUTE(z) <= 2) AND (iterations < max_iter) DO
+            z <- (z * z) + c
+            iterations <- iterations + 1
+        END WHILE
+        
+        ### OUTPUT
+        # Write grid coordinates and iteration count to CSV
+        WRITE_LINE(outputFile, FORMAT("{0},{1},{2}", row, column, iterations))
+    END FOR
+END FOR
+
+CLOSE outputFile
