@@ -1,0 +1,63 @@
+### INPUT
+OPEN file "config.txt" FOR READING AS configFile
+DECLARE config AS Dictionary
+
+READ all lines FROM configFile INTO configLines
+CLOSE configFile
+
+FOR EACH line IN configLines DO
+    line <- STRIP(line)
+    IF line IS NOT EMPTY THEN
+        parameter, value <- SPLIT(line, "=")
+        parameter <- STRIP(parameter)
+        value <- STRIP(value)
+        
+        IF "." IN value THEN
+            config[parameter] <- TO_FLOAT(value)
+        ELSE
+            config[parameter] <- TO_INTEGER(value)
+        END IF
+    END IF
+END FOR
+
+OPEN file "mandelbrot.csv" FOR READING AS csvFile
+READ all lines FROM csvFile INTO csvLines
+CLOSE csvFile
+
+# Remove CSV header row ("row,column,iterations")
+REMOVE FIRST ELEMENT FROM csvLines
+
+# Extract configuration parameters
+max_iter <- config["max_iter"]
+width <- config["ancho"]
+height <- config["alto"]
+
+### PROCESS
+# Initialize canvas in HSV color space
+img <- CREATE_IMAGE(mode: "HSV", dimensions: (width, height))
+
+FOR EACH line IN csvLines DO
+    line <- STRIP(line)
+    row_str, column_str, iter_str <- SPLIT(line, ",")
+    
+    row <- TO_INTEGER(row_str)
+    column <- TO_INTEGER(column_str)
+    iterations <- TO_INTEGER(iter_str)
+    
+    # Calculate Hue/Brightness based on escape iterations
+    IF iterations == max_iter THEN
+        brightness <- 40
+    ELSE
+        brightness <- TO_INTEGER((iterations / max_iter) * 255)
+    END IF
+    
+    # Set pixel color (Hue = brightness, Saturation = 255, Value = 255)
+    SET_PIXEL(img, coordinates: (column, row), color: (brightness, 255, 255))
+END FOR
+
+# Convert color space from HSV to standard RGB for saving
+img_rgb <- CONVERT_COLOR_MODE(img, "RGB")
+
+### OUTPUT
+SAVE_IMAGE(img_rgb, "mandelbrot.png")
+PRINT "DONE"
