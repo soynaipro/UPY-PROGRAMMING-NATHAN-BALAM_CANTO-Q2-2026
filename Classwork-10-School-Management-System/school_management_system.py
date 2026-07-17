@@ -6,7 +6,7 @@ users = {
     'mlopez': {'password': '1234', 'rol': 'student', 'name': 'María López'},
     'euc': {'password': '1234', 'rol': 'student', 'name': 'Ernesto Uc'},
     'cbalam': {'password': '1234', 'rol': 'student', 'name': 'Carlos Balam'},
-    'jpedrozo': {'password': '1234', 'rol': 'professor', 'name': 'Jorge Pedrozo'},
+    'jpedrozo': {'passw ord': '1234', 'rol': 'professor', 'name': 'Jorge Pedrozo'},
     'dgamboa': {'password': '1234', 'rol': 'coordinator', 'name': 'Didier Gamboa'}
 }
 
