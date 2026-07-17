@@ -1,0 +1,86 @@
+INICIO
+    IMPORTAR random, stddraw, Color
+
+    // 1. MÓDULO DE DIBUJO
+    SUBRUTINA draw_bars(lista, seleccionados):
+        Limpiar el lienzo gráfico
+        Calcular ancho de barra = 10.0 / longitud(lista)
+        PARA i DESDE 0 HASTA longitud(lista) - 1 HACER:
+            SI i ESTÁ EN seleccionados ENTONCES:
+                Establecer color de lápiz = ROJO
+            SINO:
+                Establecer color de lápiz = AZUL
+            FIN SI
+            Dibujar rectángulo relleno en posición X proporcional con altura lista[i]
+        FIN PARA
+        Actualizar pantalla con pausa de 500 ms
+    FIN SUBRUTINA
+
+    // 2. ALGORITMOS DE ORDENAMIENTO ANIMADOS
+    SUBRUTINA bubble_sort_animated(lista):
+        Configurar escala del lienzo X e Y
+        n = longitud(lista)
+        PARA sweep DESDE 0 HASTA n - 1 HACER:
+            PARA pair DESDE 0 HASTA n - 1 - sweep HACER:
+                draw_bars(lista, seleccionados=(pair, pair+1))
+                SI lista[pair] > lista[pair+1] ENTONCES:
+                    Intercambiar(lista[pair], lista[pair+1])
+                    draw_bars(lista, seleccionados=(pair, pair+1))
+                FIN SI
+            FIN PARA
+        FIN PARA
+        draw_bars(lista)
+        Mostrar lienzo estático
+    FIN SUBRUTINA
+
+    SUBRUTINA insertion_sort_animated(lista):
+        Configurar escala del lienzo X e Y
+        n = longitud(lista)
+        PARA i DESDE 1 HASTA n - 1 HACER:
+            j = i
+            MIENTRAS j > 0 HACER:
+                draw_bars(lista, seleccionados=(j-1, j))
+                SI lista[j-1] > lista[j] ENTONCES:
+                    Intercambiar(lista[j-1], lista[j])
+                    draw_bars(lista, seleccionados=(j-1, j))
+                    j = j - 1
+                SINO:
+                    ROMPER ciclo mientras
+                FIN SI
+            FIN MIENTRAS
+        FIN PARA
+        draw_bars(lista)
+        Mostrar lienzo estático
+    FIN SUBRUTINA
+
+    SUBRUTINA selection_sort_animated(lista):
+        Configurar escala del lienzo X e Y
+        n = longitud(lista)
+        PARA sweep DESDE 0 HASTA n - 1 HACER:
+            min_idx = sweep
+            PARA pair DESDE sweep + 1 HASTA n - 1 HACER:
+                draw_bars(lista, seleccionados=(pair, min_idx))
+                SI lista[pair] < lista[min_idx] ENTONCES:
+                    min_idx = pair
+                    draw_bars(lista, seleccionados=(pair, min_idx))
+                FIN SI
+            FIN PARA
+            SI min_idx != sweep ENTONCES:
+                draw_bars(lista, seleccionados=(sweep, min_idx))
+                Intercambiar(lista[sweep], lista[min_idx])
+                draw_bars(lista, seleccionados=(sweep, min_idx))
+            FIN SI
+        FIN PARA
+        draw_bars(lista)
+        Mostrar lienzo estático
+    FIN SUBRUTINA
+
+    // 3. BLOQUE PRINCIPAL (EJECUCIÓN)
+    lista = Generar lista de 10 números enteros aleatorios entre 0 y 100
+    IMPRIMIR "Before: ", lista
+
+    // Llamar a la función animada deseada (Ej. Selection Sort)
+    LLAMAR selection_sort_animated(lista)
+
+    IMPRIMIR "After: ", lista
+FIN
