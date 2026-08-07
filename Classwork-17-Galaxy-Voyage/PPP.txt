@@ -1,0 +1,61 @@
+# ALGORITHM Pygame_Line_Renderer
+
+# PROCESS: Configuration Parsing
+config <- empty dictionary
+OPEN "config.txt" for reading AS file
+FOR EACH line IN file DO
+    parameter, value <- split line by "="
+    
+    IF value contains "," THEN
+        config[parameter] <- tuple of integers from value
+    ELSE IF value contains "." THEN
+        config[parameter] <- float from value
+    ELSE
+        config[parameter] <- integer from value
+    END IF
+END FOR
+CLOSE file
+
+# PROCESS: Initialization
+INITIALIZE Pygame
+screen <- create display surface using config['width'] and config['height']
+
+# METHOD: calculate_x_position
+# Calculates where each vertical line should be drawn
+width <- get width of screen
+spacing <- config['space'] * width
+central_line <- width / 2
+offset <- - (integer division of config['vertical_lines'] / 2)
+x_positions <- empty list
+
+FOR i FROM 0 TO config['vertical_lines'] - 1 DO
+    add (central_line + offset * spacing) to x_positions
+    offset <- offset + 1
+END FOR
+
+PRINT x_positions
+
+# MAIN LOOP / OUTPUT
+running <- True
+
+WHILE running IS True DO
+    # Event handling
+    FOR EACH event IN captured Pygame events DO
+        IF event type is QUIT THEN
+            running <- False
+        END IF
+    END FOR
+
+    # Screen rendering
+    FILL screen with config['bg_color']
+    
+    height <- get height of screen
+    FOR EACH x IN x_positions DO
+        DRAW line on screen from (x, 0) to (x, height) using config['line_color']
+    END FOR
+    
+    UPDATE display
+END WHILE
+
+QUIT Pygame
+# END ALGORITHM
